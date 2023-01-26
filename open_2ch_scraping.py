@@ -1,3 +1,5 @@
+#製作途中
+
 from bs4 import BeautifulSoup as bs
 import cloudscraper
 import pandas as pd
