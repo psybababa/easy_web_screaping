@@ -18,4 +18,35 @@ class scrape_onj:
      for tag in tags:
              links.append(tag.get('href',None))
      return links
- 
+
+     def parse_thread():
+        df_list = list()
+        temp_dict = dict()
+        links = scrape_onj.get_links()
+        for link in links:
+                if len(link) < 2:
+                        continue
+                r = scrape_onj.scraper.get(link)
+                soup = bs(r.content,'html.parser')
+                main_wrap = soup(class_ ='MAIN_WRAP')
+                for tag in main_wrap:
+                        temp_dict['title'] = soup.h1.text
+                        temp_dict['comments'] = soup.dl.dd.text
+                        icchidatas = soup.dl.dt.text
+                        nanashi = re.findall('1 ：(...)',icchidatas)
+                        date = re.findall(r'\d*/\d*/\d*',icchidatas)
+                        timetable= re.findall(r'\d*:\d*:\d*',icchidatas)
+                        id = re.findall('ID:(....)',icchidatas)
+                        temp_dict['nanashi'] = nanashi[0]
+                        temp_dict['date'] = date[0]
+                        temp_dict['timetable'] = timetable[0]
+                        temp_dict['id'] = id[0]
+                df_list.append(temp_dict)
+                temp_dict = {}
+                
+        time.sleep(1)
+                
+        thereads_df = pd.DataFrame(df_list)
+        thereads_df.to_csv("./threads.csv",encoding='utf-8_sig',mode='a')
+        
+scrape_onj.parse_thread()
