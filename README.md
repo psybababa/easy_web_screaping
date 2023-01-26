@@ -1,1 +1,1 @@
-# easy_web_screaping
+# Not ez fuck
