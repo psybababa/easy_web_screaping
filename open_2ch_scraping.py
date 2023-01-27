@@ -1,5 +1,3 @@
-#製作途中
-
 from bs4 import BeautifulSoup as bs
 import cloudscraper
 import pandas as pd
@@ -12,14 +10,14 @@ class scrape_onj:
     def get_links():
     #スクレイピング作業をまずはおんJのスレッド一覧で行い、リンクを手に入れる。
      links = list()
-     html_ti = scrape_onj.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
-     soup_ti = bs(html_ti.content,"html.parser")
-     tags = soup_ti('a')
+     html_ll = scrape_onj.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
+     soup_ll = bs(html_ll.content,'html.parser')
+     tags = soup_ll('a')
      for tag in tags:
              links.append(tag.get('href',None))
      return links
 
-     def parse_thread():
+    def parse_thread():
         df_list = list()
         temp_dict = dict()
         links = scrape_onj.get_links()
@@ -43,10 +41,7 @@ class scrape_onj:
                         temp_dict['id'] = id[0]
                 df_list.append(temp_dict)
                 temp_dict = {}
-                
         time.sleep(1)
                 
         thereads_df = pd.DataFrame(df_list)
-        thereads_df.to_csv("./threads.csv",encoding='utf-8_sig',mode='a')
-        
-scrape_onj.parse_thread()
+        thereads_df.to_pickle('./data/threads.pkl')
