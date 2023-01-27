@@ -7,3 +7,4 @@ class df_toolbox:
         df_threads = pd.read_pickle('./data/threads.pkl') 
         df_threads.to_csv('./data/threads.csv',encoding='utf-8_sig',mode='a',header=False)
         
+df_toolbox.convcsv()
