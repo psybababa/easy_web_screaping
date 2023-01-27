@@ -45,3 +45,5 @@ class scrape_onj:
                 
         thereads_df = pd.DataFrame(df_list)
         thereads_df.to_pickle('./data/threads.pkl')
+
+scrape_onj.parse_thread()        
