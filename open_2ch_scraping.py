@@ -5,17 +5,19 @@ import re
 import time
 
 class scrape_onj:
-    scraper = cloudscraper.create_scraper(delay=1, browser="chrome") #cloudflareサーバーの1020エラーによるブロックを防ぐためrequestsではなくcloudscraperを用いる。尚、おーぷん2chではプロクシは使用できない。
+
+    def __init__(self):
+            self.scraper = cloudscraper.create_scraper(delay=1, browser="chrome") #cloudflareサーバーの1020エラーによるブロックを防ぐためrequestsではなくcloudscraperを用いる。尚、おーぷん2chではプロクシは使用できない。
         
     def get_links():
     #スクレイピング作業をまずはおんJのスレッド一覧で行い、リンクを手に入れる。
-     links = list()
-     html_ll = scrape_onj.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
-     soup_ll = bs(html_ll.content,'html.parser')
-     tags = soup_ll('a')
-     for tag in tags:
+        links = list()
+        html_ll = scrape_onj.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
+        soup_ll = bs(html_ll.content,'html.parser')
+        tags = soup_ll('a')
+        for tag in tags:
              links.append(tag.get('href',None))
-     return links
+        return links
 
     def parse_thread():
         df_list = list()
@@ -44,4 +46,19 @@ class scrape_onj:
         time.sleep(1)
                 
         thereads_df = pd.DataFrame(df_list)
-        thereads_df.to_pickle('./data/threads.pkl')
+        thereads_df.to_pickle('C:\Users\Clean\Documents\workspace\easy_scraping\data\threads.pkl')
+        
+    def parse_res(self):  
+        #指定したスレッド内をスクレイピングして、レスだけを抽出していく。こっちは一つのスレッドに対して行う
+        while True:
+                add = input('レスを集めたいスレのURLを入力してくれや*終了したい時はq入力してな:')
+                if len(add) < 1:
+                        print('URL入力してくれや；；')
+                        continue
+                if add == 'q' or add == 'Q':
+                        print('ご利用ありがとござます🥺')
+                        quit()
+                res = self.scraper.get()
+        
+        
+#scrape_onj.parse_thread()

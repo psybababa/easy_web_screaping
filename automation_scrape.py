@@ -10,7 +10,7 @@ def job():
    o2s.scrape_onj.parse_thread()
    cpc.df_toolbox.convcsv()
 
-schedule.every(4).hour.do(job)
+schedule.every(4).hours.do(job)
 
 while True:
     schedule.run_pending()
