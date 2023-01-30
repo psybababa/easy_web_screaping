@@ -46,19 +46,12 @@ class scrape_onj:
         time.sleep(1)
                 
         thereads_df = pd.DataFrame(df_list)
-        thereads_df.to_pickle('C:\Users\Clean\Documents\workspace\easy_scraping\data\threads.pkl')
+        thereads_df.to_pickle('.\data\threads.pkl')
         
     def parse_res(self):  
-        #指定したスレッド内をスクレイピングして、レスだけを抽出していく。こっちは一つのスレッドに対して行う
-        while True:
-                add = input('レスを集めたいスレのURLを入力してくれや*終了したい時はq入力してな:')
-                if len(add) < 1:
-                        print('URL入力してくれや；；')
-                        continue
-                if add == 'q' or add == 'Q':
-                        print('ご利用ありがとござます🥺')
-                        quit()
-                res = self.scraper.get()
+        #一つのスレに対して、全部のレスを集める。
+                res = self.scraper.get(add)
+                soup = bs(res.content,'html.parser')
         
         
 #scrape_onj.parse_thread()

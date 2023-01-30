@@ -4,11 +4,13 @@ import conv_pkl_to_csv as cpc
 import schedule
 import time
 import open_2ch_scraping as o2s
+import os
 
 
 def job():
    o2s.scrape_onj.parse_thread()
    cpc.df_toolbox.convcsv()
+   os..remove('./data/threads.pkl')
 
 schedule.every(4).hours.do(job)
 
