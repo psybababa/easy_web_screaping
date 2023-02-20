@@ -5,14 +5,14 @@ import pandas as pd
 import re
 import time
 
-class scrape_onj:
+class scrape:
 
     scraper = cloudscraper.create_scraper(delay=1, browser="chrome") #cloudflareサーバーの1020エラーによるブロックを防ぐためrequestsではなくcloudscraperを用いる。尚、おーぷん2chではプロクシは使用できない。
         
     def get_urls():
     #スクレイピング作業をまずはおんJのスレッド一覧で行い、リンクを手に入れる。
         urls = list()
-        html_ll = scrape_onj.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
+        html_ll = scrape.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
         soup_ll = bs(html_ll.content,'html.parser')
         tags = soup_ll('a')
         for tag in tags:
@@ -22,11 +22,11 @@ class scrape_onj:
     def scan_threads():
         df_lst = list()
         temp_dict = dict()
-        urls =scrape_onj.get_urls()
+        urls =scrape.get_urls()
         for url in urls:
                 if len(url) < 2:
                         continue
-                r = scrape_onj.scraper.get(url)
+                r = scrape.scraper.get(url)
                 soup = bs(r.content,'html.parser')
                 main_wrap = soup(class_ ='MAIN_WRAP')
                 for tag in main_wrap:
@@ -53,13 +53,13 @@ class scrape_onj:
                 threads_df.to_pickle('./data/threads.pkl')
                 
     def get_title_list():  
-        links = scrape_onj.get_urls()
+        links = scrape.get_urls()
         titles_lst = list()
         temp_dict = dict()
         for link in links:
                if len(link) < 2:
                        continue
-               r = scrape_onj.scraper.get(link)
+               r = scrape.scraper.get(link)
                soup = bs(r.content,'html.parser')
                main_wrap = soup(class_ ='MAIN_WRAP')
                for tag in main_wrap:
@@ -79,7 +79,7 @@ class scrape_onj:
                 
                 
     def get_comments():
-        scrape_onj.get_title_list()
+        scrape.get_title_list()
         dlst = list()
         df_source = list()
         df = pd.read_pickle('./data/titles.pkl')
@@ -87,7 +87,7 @@ class scrape_onj:
         for idx in zip(df['title'],df['link']):
                 dlst.append(idx)
         for tp in dlst:
-                source = scrape_onj.scraper.get(tp[1])
+                source = scrape.scraper.get(tp[1])
                 soup = bs(source.content,'html.parser')
                 val_tags = soup.find_all(class_ = re.compile('mesg hd'),attrs={'body','value'})
                 temp_lst = list()

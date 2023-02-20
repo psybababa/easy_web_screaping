@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-class df_toolbox:
+class df_converter:
     def convcomments():
         df_threads = pd.read_pickle('./data/comments.pkl') 
         df_threads.to_csv('./data/comments.csv',encoding='utf-8_sig',mode='a')
