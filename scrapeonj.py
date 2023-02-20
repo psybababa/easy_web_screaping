@@ -42,13 +42,12 @@ class scrape:
                                 tempdict['date'] = date[0]
                                 tempdict['timetable'] = timetable[0]
                                 tempdict['id'] = id[0]
-                                
+                                dflst.append(tempdict)
+                                tempdict = {}
                 except:
                         print(f'error happend while scraping{url}')
                         continue
-                                
-                dflst.append(tempdict)
-                tempdict = {}
+               
                 time.sleep(1)
                 
         threadsdf = pd.DataFrame(dflst)
@@ -79,6 +78,7 @@ class scrape:
                except:
                        print(f'Error happend while scraping {link}')
                        continue
+               
                time.sleep(1)
         
         titlesdf = pd.DataFrame(titleslst)
@@ -102,7 +102,7 @@ class scrape:
                 for vtag in valtags:
                         tempdict = dict()
                         comment = vtag.dd.text
-                        if re.search('!AA|imgur',comment)
+                        if re.search('!AA|imgur',comment):
                                 continue
                         timetable = re.findall(r'\d*:\d*:\d*',vtag.text)
                         tempdict['title'] = tp[0]
@@ -125,5 +125,5 @@ class scrape:
                 os.mkdir('./data')
         commentsdf.to_pickle('./data/comments.pkl')
         
-scrape.gettitlelist()
+scrape.scanthreads()
             
