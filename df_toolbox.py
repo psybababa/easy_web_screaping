@@ -15,3 +15,4 @@ class df_converter:
         df_threads = pd.read_pickle('./data/titles.pkl') 
         df_threads.to_csv('./data/titles.csv',encoding='utf-8_sig',mode='a')
 
+df_converter.convcomments()
