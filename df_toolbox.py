@@ -2,17 +2,18 @@
 
 import pandas as pd
 
-class df_converter:
+class dfconvert:
     def convcomments():
-        df_threads = pd.read_pickle('./data/comments.pkl') 
-        df_threads.to_csv('./data/comments.csv',encoding='utf-8_sig',mode='a')
+        with open('./data/comments.pkl') as df: 
+            df.to_csv('./data/comments.csv',encoding='utf-8_sig',mode='a')
         
     def convthreads():
-        df_threads = pd.read_pickle('./data/threads.pkl') 
-        df_threads.to_csv('./data/threads.csv',encoding='utf-8_sig',mode='a')
+        with open('./data/threads.pkl') as df:        
+            df.to_csv('./data/threads.csv',encoding='utf-8_sig',mode='a')
         
     def convtitles():
-        df_threads = pd.read_pickle('./data/titles.pkl') 
-        df_threads.to_csv('./data/titles.csv',encoding='utf-8_sig',mode='a')
+        with open('./data/titles.pkl') as df:
+            df.to_csv('./data/titles.csv',encoding='utf-8_sig',mode='a')
 
-df_converter.convcomments()
+
+class  dfprocessing:
