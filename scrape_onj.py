@@ -7,21 +7,18 @@ import time
 
 class scrape:
 
-    scraper = cloudscraper.create_scraper(delay=1, browser="chrome") #cloudflareサーバーの1020エラーによるブロックを防ぐためrequestsではなくcloudscraperを用いる。尚、おーぷん2chではプロクシは使用できない。
-        
+    scraper = cloudscraper.create_scraper(delay=1,browser = 'chrome')
+    
     def get_urls():
-    #スクレイピング作業をまずはおんJのスレッド一覧で行い、リンクを手に入れる。
         urls = list()
         html_ll = scrape.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
         soup_ll = bs(html_ll.content,'html.parser')
         tags = soup_ll('a')
-        for tag in tags:
-             urls.append(tag.get('href',None))
+        urls = [tag.get('href',None) for tag in tags if len(tag.get('href',None)) > 2]
         return urls
 
     def scan_threads():
         df_lst = list()
-        temp_dict = dict()
         urls =scrape.get_urls()
         for url in urls:
                 if len(url) < 2:
@@ -30,6 +27,7 @@ class scrape:
                 soup = bs(r.content,'html.parser')
                 main_wrap = soup(class_ ='MAIN_WRAP')
                 for tag in main_wrap:
+                        temp_dict = {}
                         temp_dict['title'] = soup.h1.text
                         temp_dict['comments'] = (soup.dl.dd.text).strip()
                         icchidatas = soup.dl.dt.text
@@ -42,8 +40,8 @@ class scrape:
                         temp_dict['timetable'] = timetable[0]
                         temp_dict['id'] = id[0]
                 df_lst.append(temp_dict)
-                temp_dict.clear()
-        time.sleep(1)
+                temp_dict = {}
+                time.sleep(1)
                 
         threads_df = pd.DataFrame(df_lst)
         try:
@@ -67,7 +65,7 @@ class scrape:
                        temp_dict['title'] = soup.h1.text
                        temp_dict['link'] = link
                        titles_lst.append(temp_dict)
-        temp_dict.clear()
+        temp_dict = {}
         time.sleep(1)
         
         titles_df = pd.DataFrame(titles_lst)
@@ -75,17 +73,14 @@ class scrape:
                 titles_df.to_pickle('./data/titles.pkl')
         except:
                 os.mkdir('./data')
-                titles_df.to_picke('./data/titles.pkl')
+                titles_df.to_pickle('./data/titles.pkl')
                 
                 
     def get_comments():
-        scrape.get_title_list()
-        dlst = list()
         df_source = list()
-        df = pd.read_pickle('./data/titles.pkl')
-        df = df.loc[1:,['title','link']]
-        for idx in zip(df['title'],df['link']):
-                dlst.append(idx)
+        with open('./data/titles.pkl') as df:
+                df = df.loc[1:,['title','link']]
+                dlst = list(zip(df['title'],df['link'])) 
         for tp in dlst:
                 source = scrape.scraper.get(tp[1])
                 soup = bs(source.content,'html.parser')
@@ -101,24 +96,25 @@ class scrape:
                         temp_dict['comment'] = comment.strip()
                         temp_dict['timetable'] = timetable
                         temp_lst.append(temp_dict)
-                        temp_dict = dict()
-           
+                        temp_dict = {}
                 df_source.extend(temp_lst)
-                temp_lst.clear()
-              
+                temp_lst = []
                 
-        
-        
-        time.sleep(1)
-        
+                time.sleep(1)
+      
+       
         df_source = [d for d in df_source if d['comment'] != '']
+       
         
         comments_df = pd.DataFrame(df_source)
         try:
                 comments_df.to_pickle('./data/comments.pkl')
         except:
                 os.mkdir('./data')
-                comments_df.to_picke('./data/comments.pkl')
+                comments_df.to_pickle('./data/comments.pkl')
+       
+     
             
+scrape.get_comments()
       
         

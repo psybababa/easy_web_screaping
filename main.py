@@ -9,6 +9,7 @@ sched = BlockingScheduler()
 def run_scraping():
     scrape.scan_threads()
     df_converter.convthreads()
+    scrape.get_title_list()
     scrape.get_comments()
     df_converter.convtitles()
     df_converter.convcomments()
