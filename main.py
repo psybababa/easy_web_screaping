@@ -1,19 +1,23 @@
-from apscheduler.schedulers.blocking import BlockingScheduler
-from df_toolbox import df_converter
-from scrape_onj import scrape
+from apscheduler.schedulers.background import BackgroundScheduler
+from df_toolbox import dfconvert
+from scrapeonj import scrape
 
-sched = BlockingScheduler()
+sched = BackgroundScheduler()
 
 @sched.scheduled_job('interval',hours = 3)
 
-def run_scraping():
-    scrape.scan_threads()
-    df_converter.convthreads()
-    scrape.get_title_list()
-    scrape.get_comments()
-    df_converter.convtitles()
-    df_converter.convcomments()
-  
+def runscraping():
+    scrape.scanthreads()
+    scrape.gettitlelist()
+    scrape.getcomments()
     
+def converttocsv():
+    dfconvert.convthreads()
+    dfconvert.convtitles()
+    dfconvert.convcomments()
+  
+  
+sched.add_job(runscraping, 'interval', hours = 3)
+sched.add_job(converttocsv, 'interval', hours = 3)   
     
 sched.start()

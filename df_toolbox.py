@@ -16,4 +16,5 @@ class dfconvert:
             df.to_csv('./data/titles.csv',encoding='utf-8_sig',mode='a')
 
 
-class  dfprocessing:
+#class  dfprocessing:
+    
