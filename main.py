@@ -11,7 +11,7 @@ from scrapeonj import scrape
 
 sched = BackgroundScheduler()
 
-@sched.scheduled_job('interval',hours = 6)
+@sched.scheduled_job('interval',hours = 3)
 
 def runscraping():
     scrape.scanthreads()
