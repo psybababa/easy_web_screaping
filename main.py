@@ -22,11 +22,8 @@ def converttocsv():
     dfconvert.convthreads()
     dfconvert.convtitles()
     dfconvert.convcomments()
-    
-runscraping()
-converttocsv()
   
-sched.add_job(runscraping, 'interval', hours = 6)
-sched.add_job(converttocsv, 'interval', hours = 6)   
+sched.add_job(runscraping, 'interval', hours = 3)
+sched.add_job(converttocsv, 'interval', hours = 3)   
     
 sched.start()
