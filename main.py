@@ -18,13 +18,11 @@ def runscraping():
     scrape.gettitlelist()
     scrape.getcomments()
     
-def converttocsv():
     dfconvert.convthreads()
     dfconvert.convtitles()
     dfconvert.convcomments()
   
   
-sched.add_job(runscraping, 'interval', hours = 6)
-sched.add_job(converttocsv, 'interval', hours = 6)   
+sched.add_job(runscraping, 'interval', hours = 6) 
     
 sched.start()
