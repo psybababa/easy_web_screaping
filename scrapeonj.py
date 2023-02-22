@@ -91,9 +91,9 @@ class scrape:
                 
     def getcomments():
         dfsource = list()
-        with open('./data/titles.pkl','rb') as titlesdf:
-                titlesdf = titlesdf.loc[1:,['title','link']]
-                dlst = list(zip(titlesdf['title'],titlesdf['link'])) 
+        titlesdf = pd.read_pickle('./data/titles.pkl')
+        titlesdf = titlesdf.loc[1:,['title','link']]
+        dlst = list(zip(titlesdf['title'],titlesdf['link'])) 
         for tp in dlst:
                 source = scrape.scraper.get(tp[1])
                 soup = bs(source.content,'html.parser')
