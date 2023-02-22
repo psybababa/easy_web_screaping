@@ -19,6 +19,7 @@ class scrape:
 
     def scanthreads():
         dflst = list()
+        tempdict = dict()
         urls =scrape.geturls()
         
         for url in urls:
@@ -30,7 +31,6 @@ class scrape:
                         soup = bs(r.content,'html.parser')
                         mainwrap = soup(class_ ='MAIN_WRAP')
                         for tag in mainwrap:
-                                tempdict = {}
                                 tempdict['title'] = soup.h1.text
                                 tempdict['comments'] = (soup.dl.dd.text).strip()
                                 icchidatas = soup.dl.dt.text
@@ -71,10 +71,10 @@ class scrape:
                        soup = bs(r.content,'html.parser')
                        mainwrap = soup(class_ ='MAIN_WRAP')
                        for tag in mainwrap:
-                               tempdict = {}
                                tempdict['title'] = soup.h1.text
                                tempdict['link'] = link
                                titleslst.append(tempdict)
+                               tempdict = {}
                except:
                        print(f'Error happend while scraping {link}')
                        continue
@@ -91,7 +91,7 @@ class scrape:
                 
     def getcomments():
         dfsource = list()
-        with open('./data/titles.pkl') as titlesdf:
+        with open('./data/titles.pkl','rb') as titlesdf:
                 titlesdf = titlesdf.loc[1:,['title','link']]
                 dlst = list(zip(titlesdf['title'],titlesdf['link'])) 
         for tp in dlst:
@@ -125,5 +125,4 @@ class scrape:
                 os.mkdir('./data')
         commentsdf.to_pickle('./data/comments.pkl')
         
-scrape.scanthreads()
-            
+        
