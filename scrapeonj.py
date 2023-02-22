@@ -102,7 +102,7 @@ class scrape:
                 for vtag in valtags:
                         tempdict = dict()
                         comment = vtag.dd.text
-                        if re.search('!AA|imgur',comment):
+                        if re.search('!AA|imgur|http',comment):
                                 continue
                         timetable = re.findall(r'\d*:\d*:\d*',vtag.text)
                         tempdict['title'] = tp[0]
