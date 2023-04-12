@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as bs
 import cloudscraper
+import json
 import pandas as pd
 import re
 import requests
@@ -18,10 +19,22 @@ class scrape:
         urls = [tag.get('href',None) for tag in tags if len(tag.get('href',None)) > 2]
         return urls
 
-    def searchurls(pnum,rpp,sword,bbs,sorder,sorder2):
+    def searchurls(params):
+        defaults = {
+                'pnum':0,
+                'rpp':100,
+                'sword':0,
+                'bbs':'livejupiter',
+                'sorder':'updated',
+                'sorder2':'ninzu'
+        }
+        
         urls = []
         searchurl = 'https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter'
-        encodedq = urllib.parse.urlencode({'p':pnum,'n':rpp,'q':sword,'bbs':bbs,'o':sorder,'o2':sorder2})
+        
+        searchparams = {**defaults,**params}  # **でkeyとvalueをextractして、mergeする
+        
+        encodedq = urllib.parse.urlencode(searchparams)
         url = searchurl + encodedq
         
         htmlll = scrape.scraper.get(url) 
@@ -43,10 +56,10 @@ class scrape:
                         title = soup.h1.text
                         comments = (soup.dl.dd.text).strip()
                         icchidatas = soup.dl.dt.text
-                        nanashi = re.find('1 ：(...)',icchidatas)
-                        date = re.find(r'\d*/\d*/\d*',icchidatas)
-                        timetable= re.find(r'\d*:\d*:\d*',icchidatas)
-                        id = re.find('ID:(....)',icchidatas)
+                        nanashi = re.search('1 ：(...)',icchidatas)
+                        date = re.search(r'\d*/\d*/\d*',icchidatas)
+                        timetable= re.search(r'\d*:\d*:\d*',icchidatas)
+                        id = re.search('ID:(....)',icchidatas)
                         
                         row = {'title':title, 'comments':comments, 'nanashi':nanashi, 'date':date,'timetable':timetable,'id':id}
                         dfsource[link] = row
@@ -57,6 +70,8 @@ class scrape:
                         print(f'error happend while scraping{link}: {e}')
                         continue
                
+        with open('./data/threads.json','wb') as f:
+                json.dump(dfsource)
                 
         threads_data = [{'link':key, **val} for key,val in dfsource.items()]
         threads_df = pd.json_normalize(threads_data)
@@ -105,6 +120,9 @@ class scrape:
                 ]})
                 
                 time.sleep(1)
+                
+                with open('./data/comments.json','wb') as f:
+                        json.dump(dfsource)
         
             commentsdf = pd.json_normalize(dfsource, ['comments'], ['title', 'link']).dropna(subset=['comment'])
         
