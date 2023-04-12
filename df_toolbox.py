@@ -52,7 +52,7 @@ class  dfpreprocess:
         df['comment'] = df['comment'].apply(neologdn.normalize)
         df.to_csv(f'./data/{fname}.csv')
             
-    def makefilter():
+    def ma():
         df = pd.read_cdv('./data/comments.csv')
         comments = [c for c in df['comments'] and df['comments']!= None]
         tagger = MeCab.Tagger()
