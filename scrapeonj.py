@@ -15,7 +15,6 @@ class scrape:
     }
     
     def geturls():
-        urls = []
         htmlll = scrape.scraper.get('https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter') 
         soupll = bs(htmlll.content,'html.parser')
         tags = soupll('a')
