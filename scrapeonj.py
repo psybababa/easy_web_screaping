@@ -47,7 +47,7 @@ class scrape:
 
     def scanthreads():
         links =scrape.geturls()
-        dfsource = {}
+        dfsource = []
         
         for link in links:
                 if len(link) < 2:
@@ -55,13 +55,15 @@ class scrape:
                 try:
                         r = scrape.scraper.get(link)
                         soup = bs(r.content,'html.parser')
-                        title = soup.h1.text
-                        comments = (soup.dl.dd.text).strip()
-                        icchidatas = soup.dl.dt.text
-                        nanashi = re.search('1 ：(...)',icchidatas)
-                        date = re.search(r'\d*/\d*/\d*',icchidatas)
-                        timetable= re.search(r'\d*:\d*:\d*',icchidatas)
-                        id = re.search('ID:(....)',icchidatas)
+                        mainwrap = soup(class_='MAIN_WRAP')
+                        for tag in mainwrap:
+                            title = soup.h1.text
+                            comments = (mainwrap.dl.dd.text).strip()
+                            icchidatas = mainwrap.dl.dt.text
+                            nanashi = re.search('1 ：(...)',icchidatas).group()
+                            date = re.search(r'\d*/\d*/\d*',icchidatas).group()
+                            timetable= re.search(r'\d*:\d*:\d*',icchidatas).group()
+                            id = re.search('ID:(....)',icchidatas).group()
                         
                         row = {'title':title, 'comments':comments, 'nanashi':nanashi, 'date':date,'timetable':timetable,'id':id}
                         dfsource[link] = row
@@ -72,13 +74,10 @@ class scrape:
                         print(f'error happend while scraping{link}: {e}')
                         continue
                
-        with open('./data/threads.json','w') as f:
-                json.dump(dfsource)
-                
         threads_data = [{'link':key, **val} for key,val in dfsource.items()]
         threads_df = pd.json_normalize(threads_data)
 
-        with open('./data/threads.pkl', 'w') as f:
+        with open('./data/threads.pkl', 'wb') as f:
             threads_df.to_pickle(f)
       
                 
@@ -91,7 +90,9 @@ class scrape:
             try:
                 r = scrape.scraper.get(link)
                 soup = bs(r.content, 'html.parser')
-                title = soup.h1.text 
+                mainwrap = soup(class_='MAIN_WRAP')
+                for tag in mainwrap:
+                    title = soup.h1.text 
                 row = {'title': title, 'link': link}
                 
                 dfsource.append(row)
@@ -104,12 +105,12 @@ class scrape:
     
         titlesdf = pd.DataFrame(dfsource)
     
-        with open('./data/titles.pkl', 'w') as f:
+        with open('./data/titles.pkl', 'wb') as f:
             titlesdf.to_pickle(f)
                 
         
     def getcomments():
-            titlesdf = pd.read_pickle('./data/titles.pkl').iloc[1:, ['title', 'link']]
+            titlesdf = pd.read_pickle('./data/titles.pkl').loc[1:, ['title', 'link']]
             dfsource = [{'title': title, 'link': link} for title, link in zip(titlesdf['title'], titlesdf['link'])]
             for row in dfsource:
                 source = scrape.scraper.get(row['link'])
@@ -122,14 +123,12 @@ class scrape:
                 ]})
                 
                 time.sleep(1)
-                
-                with open('./data/comments.json','wb') as f:
-                        json.dump(dfsource)
         
             commentsdf = pd.json_normalize(dfsource, ['comments'], ['title', 'link']).dropna(subset=['comment'])
         
             with open('./data/comments.pkl', 'wb') as f:
                 commentsdf.to_pickle(f)
-        
- 
+
+
+scrape.gettitlelist()
             
