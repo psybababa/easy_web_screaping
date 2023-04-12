@@ -72,13 +72,13 @@ class scrape:
                         print(f'error happend while scraping{link}: {e}')
                         continue
                
-        with open('./data/threads.json','wb') as f:
+        with open('./data/threads.json','w') as f:
                 json.dump(dfsource)
                 
         threads_data = [{'link':key, **val} for key,val in dfsource.items()]
         threads_df = pd.json_normalize(threads_data)
 
-        with open('./data/threads.pkl', 'wb') as f:
+        with open('./data/threads.pkl', 'w') as f:
             threads_df.to_pickle(f)
       
                 
@@ -104,7 +104,7 @@ class scrape:
     
         titlesdf = pd.DataFrame(dfsource)
     
-        with open('./data/titles.pkl', 'wb') as f:
+        with open('./data/titles.pkl', 'w') as f:
             titlesdf.to_pickle(f)
                 
         
