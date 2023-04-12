@@ -10,6 +10,9 @@ import urllib.parse
 class scrape:
         
     scraper = cloudscraper.create_scraper(delay=1,browser = 'chrome')
+    params = {
+            # 変化させたい検索用パラメータをdefaultsの様に書いてください。
+    }
     
     def geturls():
         urls = []
@@ -19,7 +22,7 @@ class scrape:
         urls = [tag.get('href',None) for tag in tags if len(tag.get('href',None)) > 2]
         return urls
 
-    def searchurls(params):
+    def searchurls(self):
         defaults = {
                 'pnum':0,
                 'rpp':100,
@@ -32,7 +35,7 @@ class scrape:
         urls = []
         searchurl = 'https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter'
         
-        searchparams = {**defaults,**params}  # **でkeyとvalueをextractして、mergeする
+        searchparams = {**defaults,**self.params}  # **でkeyとvalueをextractして、mergeする
         
         encodedq = urllib.parse.urlencode(searchparams)
         url = searchurl + encodedq
