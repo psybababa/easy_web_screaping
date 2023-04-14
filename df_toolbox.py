@@ -41,6 +41,11 @@ class process:
         'num':None, #調べたいデータの数を入力すればよし
         'thread':None, #特定のスレッド内で検索したければここにurlを入力すればいいです
         }
+    
+    def __init__(self):
+        mode = sp.Tokenizer.SplitMode.C
+        tokenizer = sp.Dictionary().create(mode)
+        tokenizer.set_option("emoji", True)      
         
     def mergeparam(self,param):
         if param:
@@ -59,11 +64,8 @@ class process:
         df = df.reindex(columns = ['comment','datetime','id','title','link'])
         df.to_pickle(f"./data/{finfo['fname']}_clean.pkl")
     
-    def tokenize(self,txt):
-        mode = sp.Tokenizer.SplitMode.C
-        tokenizer = sp.Dictionary().create(mode)
-        tokenizer.set_option("emoji", True)                
-        tokens = tokenizer.tokenize(txt)
+    def tokenize(self,txt):          
+        tokens = self.tokenizer.tokenize(txt)
         return [(t.surface(), t.part_of_speech()) for t in tokens]
     
     def ntokenize(self,txt):
