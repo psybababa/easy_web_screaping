@@ -1,6 +1,7 @@
 from collections import Counter as ct
 from datetime import date
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 import string
 import sudachipy as sp
@@ -41,9 +42,9 @@ class process:
         'thread':None, #特定のスレッド内で検索したければここにurlを入力すればいいです
         }
         
-    def changeparam(self):
-        if self.param:
-            self.dparam.update(self.param)
+    def mergeparam(self,param):
+        if param:
+            self.dparam.update(param)
     
     def cleanfile(self, finfo):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
@@ -59,11 +60,18 @@ class process:
         df.to_pickle(f"./data/{finfo['fname']}_clean.pkl")
     
     def tokenize(self,txt):
-        mode = sp.Tokenizer.SplitMode.B
+        mode = sp.Tokenizer.SplitMode.C
         tokenizer = sp.Dictionary().create(mode)
         tokenizer.set_option("emoji", True)                
         tokens = tokenizer.tokenize(txt)
-        return [t.surface() for t in tokens]
+        return [(t.surface(), t.part_of_speech()) for t in tokens]
+    
+    def ntokenize(self,txt):
+        mode = sp.Tokenizer.SplitMode.C
+        tokenizer = sp.Dictionary().create(mode)
+        tokenizer.set_option("emoji", True)                
+        tokens = tokenizer.tokenize(txt)
+        return [(t.normalized_form(), t.part_of_speech()) for t in tokens]
     
     def countid(self,finfo,n):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
@@ -72,14 +80,14 @@ class process:
         return mcid
     
     def countwords(self,finfo,n):
-        df = pd.read_pickle(f"./data/{finfo['word']}.pkl")
-        cwds = ct(df['word'])
-        mcwds = cwds.most_common(n)
-        return mcwds
+        comments = pd.read_pickle(f"./data/{finfo['fname']}.pkl")['comment']
+        wds = [t[0] for comment in comments for t in [self.ntokenize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
+        cwds = ct(wds)
+        return cwds.most_common(n)
     
     def purseid(self,finfo,id,date):
-        df = pd.read_pickle(f"./data/{finfo['word']}.pkl")
-        idf = df[df['datetime'].day == date & df['ID'] == id ]
+        df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
+        idf = pd.DataFrame[df['datetime'].day == date & df['id'] == id ]
         return idf
     
 class visualize:
