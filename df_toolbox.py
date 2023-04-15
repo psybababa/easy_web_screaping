@@ -1,7 +1,5 @@
 from collections import Counter as ct
 from datetime import date
-import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 import string
 import sudachipy as sp
@@ -46,10 +44,6 @@ class process:
         mode = sp.Tokenizer.SplitMode.C
         self.tokenizer = sp.Dictionary().create(mode)
         self.tokenizer.set_option("emoji", True)      
-        
-    def mergeparam(self,param):
-        if param:
-            self.dparam.update(param)
     
     def cleanfile(self, finfo):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
@@ -84,10 +78,12 @@ class process:
         cwds = ct(wds)
         return cwds.most_common(n)
     
+    def purseword(self,finfo,word):
+        comments = pd.read_pickle(f"./data/{finfo['fname']}.pkl")['comment']
+        wds = [t[0] for comment in comments for t in [self.tokenize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
+        return wds.count(word)
+    
     def purseid(self,finfo,id,date):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
         idf = pd.DataFrame((df['datetime'].dt.day == date) & (df['id'] == id))
-        return idf
-    
-class visualize:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        return idf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
