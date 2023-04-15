@@ -44,8 +44,8 @@ class process:
     
     def __init__(self):
         mode = sp.Tokenizer.SplitMode.C
-        tokenizer = sp.Dictionary().create(mode)
-        tokenizer.set_option("emoji", True)      
+        self.tokenizer = sp.Dictionary().create(mode)
+        self.tokenizer.set_option("emoji", True)      
         
     def mergeparam(self,param):
         if param:
@@ -68,11 +68,8 @@ class process:
         tokens = self.tokenizer.tokenize(txt)
         return [(t.surface(), t.part_of_speech()) for t in tokens]
     
-    def ntokenize(self,txt):
-        mode = sp.Tokenizer.SplitMode.C
-        tokenizer = sp.Dictionary().create(mode)
-        tokenizer.set_option("emoji", True)                
-        tokens = tokenizer.tokenize(txt)
+    def ntokenize(self,txt):           
+        tokens = self.tokenizer.tokenize(txt)
         return [(t.normalized_form(), t.part_of_speech()) for t in tokens]
     
     def countid(self,finfo,n):
@@ -89,7 +86,7 @@ class process:
     
     def purseid(self,finfo,id,date):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
-        idf = pd.DataFrame[df['datetime'].day == date & df['id'] == id ]
+        idf = pd.DataFrame((df['datetime'].dt.day == date) & (df['id'] == id))
         return idf
     
 class visualize:
