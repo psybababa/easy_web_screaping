@@ -14,6 +14,7 @@ class scrape:
             # 変化させたい検索用パラメータをdefaultsの様に書いてください。
     }
     
+    
     def geturls():
         #テスト用。今現在のおんJの状況が知りたければこっちを使えばいい
         htmlll = scrape.scraper.get("https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter") 
@@ -36,7 +37,7 @@ class scrape:
         urls = []
         searchurl = "https://hayabusa.open2ch.net/headline.cgi?bbs=livejupiter"
         
-        searchparams = {**defaults,**scrape.params}  # **でkeyとvalueを抽出して合成する
+        searchparams = {**scrape.params,**defaults}  # **でkeyとvalueを抽出して合成する
         
         encodedq = urllib.parse.urlencode(searchparams)
         url = searchurl + encodedq
@@ -61,7 +62,7 @@ class scrape:
                         icchidatas = soup.dl.dt.text
                         date = re.findall(r"\d*/\d*/\d*",icchidatas)[0]
                         timetable= re.findall(r"\d*:\d*:\d*",icchidatas)[0]
-                        id = re.findall("ID:(\w*)",icchidatas)[0]
+                        id = re.findall("ID:(\w\w\w\w)",icchidatas)[0]
                         
                         row = {"title":title, "comments":comments, "date":date,"timetable":timetable,"id":id}
                         dfsource[link] = row
@@ -79,7 +80,7 @@ class scrape:
             threads_df.to_pickle(f)
       
                 
-    def gettitlelist():
+    def gettitles():
         links = scrape.geturls()
         dfsource = []
         for link in links:
@@ -112,7 +113,7 @@ class scrape:
                 valtags = soup.find_all("dl",{"val":True})
                 
                 row.update({"comments": [
-                    {"comment": vtag.dd.text.strip(), "date":re.findall(r"\d*/\d*/\d*",vtag.dt.text)[0], "timetable": re.findall(r"\d*:\d*:\d*", vtag.dt.text)[0], "id":re.findall("ID:(\w\w\w\w)",vtag.dt.text)[0]}
+                    {"comment": vtag.dd.text.strip(), "date":re.findall(r"\d+/\d+/\d+",vtag.dt.text)[0], "timetable": re.findall(r"\d+:\d+:\d+", vtag.dt.text)[0], "id":re.findall("ID:(\w\w\w\w)",vtag.dt.text)[0]}
                     for vtag in valtags if not re.search("!AA|imgur|http", vtag.dd.text)
                 ]})
                 
@@ -131,7 +132,7 @@ class scrape:
             soup = bs(source.content,"lxml")
             valtags = soup.find_all("dl",{"val":True}) 
             row.update({"comments": [
-                {"comment": vtag.dd.text.strip(), "date":re.findall(r"\d*/\d*/\d*",vtag.dt.text)[0], "timetable": re.findall(r"\d*:\d*:\d*", vtag.dt.text)[0], "id":re.findall("ID:(\w\w\w\w)",vtag.dt.text)[0]}
+                {"comment": vtag.dd.text.strip(), "date":re.findall(r"\d*/\d*/\d*",vtag.dt.text)[0], "timetable": re.findall(r"\d+:\d+:\d+", vtag.dt.text)[0], "id":re.findall("ID:(\w\w\w\w)",vtag.dt.text)[0]}
                 for vtag in valtags if not re.search("!AA|imgur|http", vtag.dd.text) if not len(vtag.dd.text.strip()) < 2
             ]})
             

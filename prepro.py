@@ -43,8 +43,11 @@ class process:
     def __init__(self):
         mode = sp.Tokenizer.SplitMode.C
         self.tokenizer = sp.Dictionary().create(mode)
-        self.tokenizer.set_option("emoji", True)      
-    
+        self.tokenizer.set_option("emoji", True)
+        
+    def sancheck(self):
+        pass
+        
     def cleanfile(self, finfo):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
         df['comment'] = df['comment'].replace('\n',' ')
@@ -52,17 +55,17 @@ class process:
         df['date'] = df['date'].replace('/','-')
         date_str = f"{df['date']}{df['timetable']}"
         df.drop(['date','timetable'],axis=1,inplace=True)
-        df['datetime'] = pd.to_datetime(date_str)
+        df['datetime'] = date_str
         df.dropna(inplace=True, subset=['title', 'link'])
         df.drop_duplicates(subset='title', inplace=True)
-        df = df.reindex(columns = ['comment','datetime','id','title','link'])
-        df.to_pickle(f"./data/{finfo['fname']}_clean.pkl")
+        df = df.reindex(columns = ['title','comment','datetime','id','link'])
+        df.to_pickle(f"./data/{finfo['fname']}_{finfo['datetime']}.pkl")
     
-    def tokenize(self,txt):          
+    def serialize(self,txt):          
         tokens = self.tokenizer.tokenize(txt)
         return [(t.surface(), t.part_of_speech()) for t in tokens]
     
-    def ntokenize(self,txt):           
+    def nserialize(self,txt):           
         tokens = self.tokenizer.tokenize(txt)
         return [(t.normalized_form(), t.part_of_speech()) for t in tokens]
     
@@ -74,16 +77,16 @@ class process:
     
     def countwords(self,finfo,n):
         comments = pd.read_pickle(f"./data/{finfo['fname']}.pkl")['comment']
-        wds = [t[0] for comment in comments for t in [self.ntokenize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
+        wds = [t[0] for comment in comments for t in [self.nserialize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
         cwds = ct(wds)
         return cwds.most_common(n)
     
     def purseword(self,finfo,word):
         comments = pd.read_pickle(f"./data/{finfo['fname']}.pkl")['comment']
-        wds = [t[0] for comment in comments for t in [self.tokenize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
+        wds = [t[0] for comment in comments for t in [self.serialize(comment)] if t[1] in ['名詞','動詞','形容詞','固有名詞','emoji']]
         return wds.count(word)
     
-    def purseid(self,finfo,id,date):
+    def purseid(self, finfo, id, date):
         df = pd.read_pickle(f"./data/{finfo['fname']}.pkl")
-        idf = pd.DataFrame((df['datetime'].dt.day == date) & (df['id'] == id))
-        return idf                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+        return df[(df['datetime'] == date) & (df['id'] == id)]
+       
