@@ -60,8 +60,8 @@ class scrape:
                         title = soup.h1.text
                         comments = (soup.dl.dd.text).strip()
                         icchidatas = soup.dl.dt.text
-                        date = re.findall(r"\d*/\d*/\d*",icchidatas)[0]
-                        timetable= re.findall(r"\d*:\d*:\d*",icchidatas)[0]
+                        date = re.findall(r"\d+/\d+/\d+",icchidatas)[0]
+                        timetable= re.findall(r"\d+:\d+:\d+",icchidatas)[0]
                         id = re.findall("ID:(\w\w\w\w)",icchidatas)[0]
                         
                         row = {"title":title, "comments":comments, "date":date,"timetable":timetable,"id":id}
